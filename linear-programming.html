@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Linear Programming Practice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .slide-container {
+            background: white;
+            width: 100%;
+            max-width: 1100px;
+            min-height: 650px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            padding: 50px;
+            min-height: 650px;
+        }
+
+        .slide.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .slide h1 {
+            color: #1e3c72;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            border-bottom: 4px solid #2a5298;
+            padding-bottom: 15px;
+        }
+
+        .slide h2 {
+            color: #2a5298;
+            font-size: 1.6rem;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        .slide h3 {
+            color: #1e3c72;
+            font-size: 1.2rem;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        .problem-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            border-left: 5px solid #2a5298;
+        }
+
+        .input-section {
+            background: #fff9e6;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 5px solid #ff9800;
+        }
+
+        .question {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .question label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .question input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+            transition: border-color 0.3s;
+        }
+
+        .question input:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+
+        .question input.correct {
+            border-color: #4caf50;
+            background: #f1f8f4;
+        }
+
+        .question input.incorrect {
+            border-color: #f44336;
+            background: #fef5f5;
+        }
+
+        .hint {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .check-btn {
+            background: #ff9800;
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .check-btn:hover {
+            background: #f57c00;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.success {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            color: #2e7d32;
+        }
+
+        .feedback.partial {
+            background: #fff9e6;
+            border-left: 5px solid #ff9800;
+            color: #f57c00;
+        }
+
+        .feedback.error {
+            background: #fef5f5;
+            border-left: 5px solid #f44336;
+            color: #c62828;
+        }
+
+        .solution-box {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 5px solid #4caf50;
+        }
+
+        .highlight {
+            background: #fff176;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 50px;
+        }
+
+        .nav-btn {
+            background: #2a5298;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #1e3c72;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #2a5298;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 5px;
+            background: #4caf50;
+            transition: width 0.3s ease;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #2a5298;
+            color: white;
+        }
+
+        .title-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .title-slide h1 {
+            font-size: 2.8rem;
+            border: none;
+        }
+
+        .title-slide p {
+            font-size: 1.2rem;
+            color: #666;
+            margin-top: 20px;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .score-display {
+            background: #2a5298;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.2rem;
+        }
+
+        .formula-display {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.05rem;
+        }
+
+        .correct-answer {
+            color: #2e7d32;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="progress-bar" id="progressBar"></div>
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">16</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active title-slide">
+            <h1>Interactive Linear Programming Practice</h1>
+            <p>5 Problems with Interactive Learning</p>
+            <p style="margin-top: 30px; font-size: 1rem;">Solve each problem step-by-step and receive instant feedback!</p>
+            <p style="margin-top: 20px; font-size: 0.9rem; color: #999;">Use arrow keys or buttons to navigate</p>
+        </div>
+
+        <!-- Example 1: Problem Statement -->
+        <div class="slide">
+            <h1>Example 1: Production Planning</h1>
+            <div class="problem-box">
+                <h3>Problem Statement</h3>
+                <p>A furniture company manufactures three types of products: chairs, tables, and desks. Each product requires time on three machines:</p>
+                <ul>
+                    <li><strong>Cutting machine:</strong> Chairs need 2 hours, tables need 4 hours, desks need 3 hours</li>
+                    <li><strong>Assembly machine:</strong> Chairs need 3 hours, tables need 2 hours, desks need 5 hours</li>
+                    <li><strong>Finishing machine:</strong> Chairs need 1 hour, tables need 3 hours, desks need 2 hours</li>
+                </ul>
+                <p style="margin-top: 15px;">Available time per week: Cutting (100 hrs), Assembly (120 hrs), Finishing (80 hrs)</p>
+                <p style="margin-top: 10px;">Profit per unit: Chairs ($50), Tables ($80), Desks ($100)</p>
+                <p style="margin-top: 15px;"><strong>Decision Variables:</strong></p>
+                <p>x₁ = number of chairs, x₂ = number of tables, x₃ = number of desks</p>
+            </div>
+        </div>
+
+        <!-- Example 1: Interactive Questions -->
+        <div class="slide">
+            <h1>Example 1: Formulate the Problem</h1>
+            <div class="input-section">
+                <h3>Enter your formulation:</h3>
+                
+                <div class="question">
+                    <label>1. Objective Function (use x1, x2, x3):</label>
+                    <input type="text" id="ex1_obj" placeholder="">
+                    <div class="hint">Format: ax1 + bx2 + cx3 (enter coefficients and variables)</div>
+                </div>
+
+                <div class="question">
+                    <label>2. Cutting Machine Constraint:</label>
+                    <input type="text" id="ex1_c1" placeholder="">
+                    <div class="hint">Consider hours needed per product and total available time</div>
+                </div>
+
+                <div class="question">
+                    <label>3. Assembly Machine Constraint:</label>
+                    <input type="text" id="ex1_c2" placeholder="">
+                </div>
+
+                <div class="question">
+                    <label>4. Finishing Machine Constraint:</label>
+                    <input type="text" id="ex1_c3" placeholder="">
+                </div>
+
+                <button class="check-btn" onclick="checkAnswers(1)">Check My Answers</button>
+                
+                <div class="feedback" id="feedback1"></div>
+            </div>
+        </div>
+
+        <!-- Example 1: Solution -->
+        <div class="slide">
+            <h1>Example 1: Complete Solution</h1>
+            <div class="solution-box">
+                <h3>Correct Formulation:</h3>
+                <div class="formula-display">
+                    <strong>Objective Function:</strong><br>
+                    Maximize Z = 50x₁ + 80x₂ + 100x₃<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → We want to maximize profit. Each chair earns $50, each table $80, and each desk $100.
+                    </div>
+                    <br>
+                    
+                    <strong>Constraints:</strong><br>
+                    2x₁ + 4x₂ + 3x₃ ≤ 100  (Cutting time)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Each chair needs 2 hours, table needs 4 hours, desk needs 3 hours on cutting machine. Total available time is 100 hours.
+                    </div><br>
+                    
+                    3x₁ + 2x₂ + 5x₃ ≤ 120  (Assembly time)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Each chair needs 3 hours, table needs 2 hours, desk needs 5 hours on assembly machine. Total available time is 120 hours.
+                    </div><br>
+                    
+                    x₁ + 3x₂ + 2x₃ ≤ 80   (Finishing time)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Each chair needs 1 hour, table needs 3 hours, desk needs 2 hours on finishing machine. Total available time is 80 hours.
+                    </div><br>
+                    
+                    x₁, x₂, x₃ ≥ 0        (Non-negativity)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Cannot produce negative quantities of products.
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 25px;">Optimal Solution:</h3>
+                <p><span class="highlight">x₁ = 10 chairs</span>, <span class="highlight">x₂ = 15 tables</span>, <span class="highlight">x₃ = 8 desks</span></p>
+                <p style="margin-top: 10px;"><strong>Maximum Profit:</strong> <span class="highlight">Z = $2,500</span></p>
+            </div>
+        </div>
+
+        <!-- Example 2: Problem Statement -->
+        <div class="slide">
+            <h1>Example 2: Diet Problem</h1>
+            <div class="problem-box">
+                <h3>Problem Statement</h3>
+                <p>A nutritionist wants to design a minimum-cost diet using four foods (A, B, C, D):</p>
+                
+                <table>
+                    <tr>
+                        <th>Food</th>
+                        <th>Calories/unit</th>
+                        <th>Protein (g)/unit</th>
+                        <th>Vitamins (mg)/unit</th>
+                        <th>Cost/unit</th>
+                    </tr>
+                    <tr><td>A</td><td>400</td><td>20</td><td>50</td><td>$2</td></tr>
+                    <tr><td>B</td><td>300</td><td>25</td><td>30</td><td>$3</td></tr>
+                    <tr><td>C</td><td>500</td><td>15</td><td>40</td><td>$2.50</td></tr>
+                    <tr><td>D</td><td>200</td><td>30</td><td>60</td><td>$4</td></tr>
+                </table>
+                
+                <p style="margin-top: 15px;"><strong>Requirements:</strong> At least 2000 calories, 100g protein, 200mg vitamins</p>
+                <p><strong>Decision Variables:</strong> x₁, x₂, x₃, x₄ = units of foods A, B, C, D</p>
+            </div>
+        </div>
+
+        <!-- Example 2: Interactive Questions -->
+        <div class="slide">
+            <h1>Example 2: Formulate the Problem</h1>
+            <div class="input-section">
+                <h3>Enter your formulation:</h3>
+                
+                <div class="question">
+                    <label>1. Objective Function (minimize cost):</label>
+                    <input type="text" id="ex2_obj" placeholder="">
+                </div>
+
+                <div class="question">
+                    <label>2. Calorie Constraint (minimum 2000):</label>
+                    <input type="text" id="ex2_c1" placeholder="">
+                    <div class="hint">Use >= for minimum requirements</div>
+                </div>
+
+                <div class="question">
+                    <label>3. Protein Constraint (minimum 100g):</label>
+                    <input type="text" id="ex2_c2" placeholder="">
+                </div>
+
+                <div class="question">
+                    <label>4. Vitamin Constraint (minimum 200mg):</label>
+                    <input type="text" id="ex2_c3" placeholder="">
+                </div>
+
+                <button class="check-btn" onclick="checkAnswers(2)">Check My Answers</button>
+                
+                <div class="feedback" id="feedback2"></div>
+            </div>
+        </div>
+
+        <!-- Example 2: Solution -->
+        <div class="slide">
+            <h1>Example 2: Complete Solution</h1>
+            <div class="solution-box">
+                <h3>Correct Formulation:</h3>
+                <div class="formula-display">
+                    <strong>Objective Function:</strong><br>
+                    Minimize Z = 2x₁ + 3x₂ + 2.5x₃ + 4x₄<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → We want to minimize total cost. Food A costs $2/unit, B costs $3/unit, C costs $2.50/unit, and D costs $4/unit.
+                    </div>
+                    <br>
+                    
+                    <strong>Constraints:</strong><br>
+                    400x₁ + 300x₂ + 500x₃ + 200x₄ ≥ 2000  (Calories)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Food A has 400 cal/unit, B has 300 cal/unit, C has 500 cal/unit, D has 200 cal/unit. Need at least 2000 calories total. Use ≥ because it's a minimum requirement.
+                    </div><br>
+                    
+                    20x₁ + 25x₂ + 15x₃ + 30x₄ ≥ 100    (Protein)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Food A has 20g protein/unit, B has 25g/unit, C has 15g/unit, D has 30g/unit. Need at least 100g total.
+                    </div><br>
+                    
+                    50x₁ + 30x₂ + 40x₃ + 60x₄ ≥ 200    (Vitamins)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Food A has 50mg vitamins/unit, B has 30mg/unit, C has 40mg/unit, D has 60mg/unit. Need at least 200mg total.
+                    </div><br>
+                    
+                    x₁, x₂, x₃, x₄ ≥ 0<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Cannot consume negative quantities of food.
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 25px;">Optimal Solution:</h3>
+                <p><span class="highlight">x₁ = 2 units of A</span>, <span class="highlight">x₂ = 0 units of B</span></p>
+                <p><span class="highlight">x₃ = 2.4 units of C</span>, <span class="highlight">x₄ = 1 unit of D</span></p>
+                <p style="margin-top: 10px;"><strong>Minimum Cost:</strong> <span class="highlight">Z = $14.00</span></p>
+            </div>
+        </div>
+
+        <!-- Example 3: Problem Statement -->
+        <div class="slide">
+            <h1>Example 3: Investment Portfolio</h1>
+            <div class="problem-box">
+                <h3>Problem Statement</h3>
+                <p>An investor has $100,000 to invest in three stocks:</p>
+                <ul>
+                    <li><strong>Stock S₁:</strong> Expected return 8%, Risk level 3</li>
+                    <li><strong>Stock S₂:</strong> Expected return 12%, Risk level 5</li>
+                    <li><strong>Stock S₃:</strong> Expected return 15%, Risk level 8</li>
+                </ul>
+                <p style="margin-top: 15px;"><strong>Constraints:</strong></p>
+                <ul>
+                    <li>Total investment must equal $100,000</li>
+                    <li>Maximum 50% ($50,000) in any single stock</li>
+                    <li>Average risk: (3x₁ + 5x₂ + 8x₃) / 100,000 ≤ 5.5</li>
+                </ul>
+                <p style="margin-top: 15px;"><strong>Decision Variables:</strong> x₁, x₂, x₃ = amount invested in S₁, S₂, S₃</p>
+            </div>
+        </div>
+
+        <!-- Example 3: Interactive Questions -->
+        <div class="slide">
+            <h1>Example 3: Formulate the Problem</h1>
+            <div class="input-section">
+                <h3>Enter your formulation:</h3>
+                
+                <div class="question">
+                    <label>1. Objective Function (maximize return):</label>
+                    <input type="text" id="ex3_obj" placeholder="">
+                    <div class="hint">Use decimal form for percentages (8% = 0.08)</div>
+                </div>
+
+                <div class="question">
+                    <label>2. Total Investment Constraint:</label>
+                    <input type="text" id="ex3_c1" placeholder="">
+                </div>
+
+                <div class="question">
+                    <label>3. Risk Constraint (simplified to avoid division):</label>
+                    <input type="text" id="ex3_c2" placeholder="">
+                    <div class="hint">Multiply both sides by 100,000 to eliminate division</div>
+                </div>
+
+                <button class="check-btn" onclick="checkAnswers(3)">Check My Answers</button>
+                
+                <div class="feedback" id="feedback3"></div>
+            </div>
+        </div>
+
+        <!-- Example 3: Solution -->
+        <div class="slide">
+            <h1>Example 3: Complete Solution</h1>
+            <div class="solution-box">
+                <h3>Correct Formulation:</h3>
+                <div class="formula-display">
+                    <strong>Objective Function:</strong><br>
+                    Maximize Z = 0.08x₁ + 0.12x₂ + 0.15x₃<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → We want to maximize expected return. S₁ returns 8% (0.08), S₂ returns 12% (0.12), S₃ returns 15% (0.15).
+                    </div>
+                    <br>
+                    
+                    <strong>Constraints:</strong><br>
+                    x₁ + x₂ + x₃ = 100,000        (Total investment)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → The sum of all investments must equal exactly $100,000. Use = because we must invest all the money.
+                    </div><br>
+                    
+                    x₁ ≤ 50,000                   (Max 50% in S₁)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Cannot invest more than $50,000 (50% of total) in Stock S₁ to diversify risk.
+                    </div><br>
+                    
+                    x₂ ≤ 50,000                   (Max 50% in S₂)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Cannot invest more than $50,000 (50% of total) in Stock S₂ to diversify risk.
+                    </div><br>
+                    
+                    x₃ ≤ 50,000                   (Max 50% in S₃)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Cannot invest more than $50,000 (50% of total) in Stock S₃ to diversify risk.
+                    </div><br>
+                    
+                    3x₁ + 5x₂ + 8x₃ ≤ 550,000     (Risk constraint)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Average risk = (3x₁ + 5x₂ + 8x₃)/100,000 ≤ 5.5. Multiplying both sides by 100,000 gives 3x₁ + 5x₂ + 8x₃ ≤ 550,000.
+                    </div><br>
+                    
+                    x₁, x₂, x₃ ≥ 0                (Non-negativity)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Cannot invest negative amounts.
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 25px;">Optimal Solution:</h3>
+                <p><span class="highlight">x₁ = $25,000 in S₁</span>, <span class="highlight">x₂ = $50,000 in S₂</span>, <span class="highlight">x₃ = $25,000 in S₃</span></p>
+                <p style="margin-top: 10px;"><strong>Maximum Expected Return:</strong> <span class="highlight">Z = $11,750</span></p>
+            </div>
+        </div>
+
+        <!-- Example 4: Problem Statement -->
+        <div class="slide">
+            <h1>Example 4: Transportation Problem</h1>
+            <div class="problem-box">
+                <h3>Problem Statement</h3>
+                <p>A company can use 4 transportation modes to ship 600 units:</p>
+                <ul>
+                    <li><strong>Truck:</strong> Cost $5/unit, capacity 200 units, time 2 days</li>
+                    <li><strong>Train:</strong> Cost $3/unit, capacity 300 units, time 4 days</li>
+                    <li><strong>Air:</strong> Cost $15/unit, capacity 100 units, time 1 day</li>
+                    <li><strong>Ship:</strong> Cost $2/unit, capacity 500 units, time 7 days</li>
+                </ul>
+                <p style="margin-top: 15px;"><strong>Constraints:</strong></p>
+                <ul>
+                    <li>Must ship exactly 600 units total</li>
+                    <li>At least 30% (180 units) must arrive within 2 days</li>
+                    <li>Budget limit: $4,000</li>
+                </ul>
+                <p style="margin-top: 15px;"><strong>Decision Variables:</strong> x₁, x₂, x₃, x₄ = units by truck, train, air, ship</p>
+            </div>
+        </div>
+
+        <!-- Example 4: Interactive Questions -->
+        <div class="slide">
+            <h1>Example 4: Formulate the Problem</h1>
+            <div class="input-section">
+                <h3>Enter your formulation:</h3>
+                
+                <div class="question">
+                    <label>1. Objective Function (minimize total time):</label>
+                    <input type="text" id="ex4_obj" placeholder="">
+                    <div class="hint">Minimize total shipping time (days × units)</div>
+                </div>
+
+                <div class="question">
+                    <label>2. Total Demand Constraint:</label>
+                    <input type="text" id="ex4_c1" placeholder="">
+                </div>
+
+                <div class="question">
+                    <label>3. Fast Delivery Constraint (≤2 days):</label>
+                    <input type="text" id="ex4_c2" placeholder="">
+                    <div class="hint">Only truck and air meet the 2-day requirement</div>
+                </div>
+
+                <div class="question">
+                    <label>4. Budget Constraint:</label>
+                    <input type="text" id="ex4_c3" placeholder="">
+                </div>
+
+                <button class="check-btn" onclick="checkAnswers(4)">Check My Answers</button>
+                
+                <div class="feedback" id="feedback4"></div>
+            </div>
+        </div>
+
+        <!-- Example 4: Solution -->
+        <div class="slide">
+            <h1>Example 4: Complete Solution</h1>
+            <div class="solution-box">
+                <h3>Correct Formulation:</h3>
+                <div class="formula-display">
+                    <strong>Objective Function:</strong><br>
+                    Minimize Z = 2x₁ + 4x₂ + x₃ + 7x₄<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → We want to minimize total shipping time. Truck takes 2 days, train 4 days, air 1 day, ship 7 days per unit.
+                    </div>
+                    <br>
+                    
+                    <strong>Constraints:</strong><br>
+                    x₁ + x₂ + x₃ + x₄ = 600        (Total demand)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Must ship exactly 600 units total across all transportation modes. Use = because demand must be met exactly.
+                    </div><br>
+                    
+                    x₁ + x₃ ≥ 180                  (30% in ≤2 days)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → At least 180 units (30% of 600) must arrive within 2 days. Only truck (x₁) and air (x₃) meet this requirement.
+                    </div><br>
+                    
+                    5x₁ + 3x₂ + 15x₃ + 2x₄ ≤ 4000  (Budget)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Truck costs $5/unit, train $3/unit, air $15/unit, ship $2/unit. Total cost cannot exceed $4,000 budget.
+                    </div><br>
+                    
+                    x₁ ≤ 200, x₂ ≤ 300, x₃ ≤ 100, x₄ ≤ 500  (Capacity)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Each mode has limited capacity: truck (200), train (300), air (100), ship (500) units.
+                    </div><br>
+                    
+                    x₁, x₂, x₃, x₄ ≥ 0             (Non-negativity)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Cannot ship negative quantities.
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 25px;">Optimal Solution:</h3>
+                <p><span class="highlight">x₁ = 100 units by truck</span>, <span class="highlight">x₂ = 300 units by train</span></p>
+                <p><span class="highlight">x₃ = 100 units by air</span>, <span class="highlight">x₄ = 100 units by ship</span></p>
+                <p style="margin-top: 10px;"><strong>Minimum Total Time:</strong> <span class="highlight">Z = 2,600 unit-days</span></p>
+            </div>
+        </div>
+
+        <!-- Example 5: Problem Statement -->
+        <div class="slide">
+            <h1>Example 5: Agricultural Planning</h1>
+            <div class="problem-box">
+                <h3>Problem Statement</h3>
+                <p>A farmer has 100 acres to plant four crops:</p>
+                
+                <table>
+                    <tr>
+                        <th>Crop</th>
+                        <th>Profit/acre</th>
+                        <th>Water (gal/acre)</th>
+                        <th>Labor (hrs/acre)</th>
+                        <th>Fertilizer (lbs/acre)</th>
+                    </tr>
+                    <tr><td>Wheat</td><td>$400</td><td>1000</td><td>5</td><td>50</td></tr>
+                    <tr><td>Corn</td><td>$600</td><td>1500</td><td>8</td><td>80</td></tr>
+                    <tr><td>Soybeans</td><td>$500</td><td>1200</td><td>6</td><td>60</td></tr>
+                    <tr><td>Cotton</td><td>$700</td><td>2000</td><td>10</td><td>100</td></tr>
+                </table>
+                
+                <p style="margin-top: 15px;"><strong>Resources:</strong> 120,000 gallons water, 700 labor hours, 6,000 lbs fertilizer</p>
+                <p style="margin-top: 15px;"><strong>Decision Variables:</strong> x₁, x₂, x₃, x₄ = acres of wheat, corn, soybeans, cotton</p>
+            </div>
+        </div>
+
+        <!-- Example 5: Interactive Questions -->
+        <div class="slide">
+            <h1>Example 5: Formulate the Problem</h1>
+            <div class="input-section">
+                <h3>Enter your formulation:</h3>
+                
+                <div class="question">
+                    <label>1. Objective Function (maximize profit):</label>
+                    <input type="text" id="ex5_obj" placeholder="">
+                </div>
+
+                <div class="question">
+                    <label>2. Land Constraint:</label>
+                    <input type="text" id="ex5_c1" placeholder="">
+                </div>
+
+                <div class="question">
+                    <label>3. Water Constraint:</label>
+                    <input type="text" id="ex5_c2" placeholder="">
+                </div>
+
+                <div class="question">
+                    <label>4. Labor Constraint:</label>
+                    <input type="text" id="ex5_c3" placeholder="">
+                </div>
+
+                <button class="check-btn" onclick="checkAnswers(5)">Check My Answers</button>
+                
+                <div class="feedback" id="feedback5"></div>
+            </div>
+        </div>
+
+        <!-- Example 5: Solution -->
+        <div class="slide">
+            <h1>Example 5: Complete Solution</h1>
+            <div class="solution-box">
+                <h3>Correct Formulation:</h3>
+                <div class="formula-display">
+                    <strong>Objective Function:</strong><br>
+                    Maximize Z = 400x₁ + 600x₂ + 500x₃ + 700x₄<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → We want to maximize profit. Wheat earns $400/acre, corn $600/acre, soybeans $500/acre, cotton $700/acre.
+                    </div>
+                    <br>
+                    
+                    <strong>Constraints:</strong><br>
+                    x₁ + x₂ + x₃ + x₄ ≤ 100              (Land)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Total acres planted cannot exceed 100 acres of available farmland.
+                    </div><br>
+                    
+                    1000x₁ + 1500x₂ + 1200x₃ + 2000x₄ ≤ 120,000  (Water)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Wheat needs 1000 gal/acre, corn 1500, soybeans 1200, cotton 2000. Total water available is 120,000 gallons.
+                    </div><br>
+                    
+                    5x₁ + 8x₂ + 6x₃ + 10x₄ ≤ 700         (Labor)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Wheat needs 5 hrs/acre, corn 8, soybeans 6, cotton 10. Total labor available is 700 hours.
+                    </div><br>
+                    
+                    50x₁ + 80x₂ + 60x₃ + 100x₄ ≤ 6,000   (Fertilizer)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Wheat needs 50 lbs/acre, corn 80, soybeans 60, cotton 100. Total fertilizer available is 6,000 lbs.
+                    </div><br>
+                    
+                    x₁, x₂, x₃, x₄ ≥ 0                   (Non-negativity)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Cannot plant negative acres.
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 25px;">Optimal Solution:</h3>
+                <p><span class="highlight">x₁ = 20 acres wheat</span>, <span class="highlight">x₂ = 30 acres corn</span></p>
+                <p><span class="highlight">x₃ = 25 acres soybeans</span>, <span class="highlight">x₄ = 25 acres cotton</span></p>
+                <p style="margin-top: 10px;"><strong>Maximum Profit:</strong> <span class="highlight">Z = $48,500</span></p>
+            </div>
+        </div>
+
+        <!-- Final Summary Slide -->
+        <div class="slide">
+            <h1>Congratulations! 🎉</h1>
+            <div class="solution-box">
+                <h2>You've completed all 5 Linear Programming problems!</h2>
+                <p style="margin-top: 20px; font-size: 1.1rem;">You've practiced formulating:</p>
+                <ul style="font-size: 1.05rem; margin-top: 15px;">
+                    <li>Objective functions (maximization and minimization)</li>
+                    <li>Inequality constraints (≤ and ≥)</li>
+                    <li>Equality constraints (=)</li>
+                    <li>Multiple decision variables (3-4 variables)</li>
+                </ul>
+                
+                <div class="score-display" style="margin-top: 30px;">
+                    <strong>Total Score: <span id="totalScore">0</span> / 55 points</strong>
+                </div>
+                
+                <p style="margin-top: 20px; text-align: center; color: #666;">
+                    Review any problems you'd like by navigating back through the slides!
+                </p>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        let totalScore = 0;
+        
+        // Answer keys for each example
+        const answers = {
+            1: {
+                obj: ['50x1+80x2+100x3', '50x1 + 80x2 + 100x3'],
+                c1: ['2x1+4x2+3x3<=100', '2x1 + 4x2 + 3x3 <= 100', '2x1+4x2+3x3≤100'],
+                c2: ['3x1+2x2+5x3<=120', '3x1 + 2x2 + 5x3 <= 120', '3x1+2x2+5x3≤120'],
+                c3: ['x1+3x2+2x3<=80', 'x1 + 3x2 + 2x3 <= 80', '1x1+3x2+2x3<=80', 'x1+3x2+2x3≤80']
+            },
+            2: {
+                obj: ['2x1+3x2+2.5x3+4x4', '2x1 + 3x2 + 2.5x3 + 4x4'],
+                c1: ['400x1+300x2+500x3+200x4>=2000', '400x1 + 300x2 + 500x3 + 200x4 >= 2000', '400x1+300x2+500x3+200x4≥2000'],
+                c2: ['20x1+25x2+15x3+30x4>=100', '20x1 + 25x2 + 15x3 + 30x4 >= 100', '20x1+25x2+15x3+30x4≥100'],
+                c3: ['50x1+30x2+40x3+60x4>=200', '50x1 + 30x2 + 40x3 + 60x4 >= 200', '50x1+30x2+40x3+60x4≥200']
+            },
+            3: {
+                obj: ['0.08x1+0.12x2+0.15x3', '0.08x1 + 0.12x2 + 0.15x3', '.08x1+.12x2+.15x3'],
+                c1: ['x1+x2+x3=100000', 'x1 + x2 + x3 = 100000'],
+                c2: ['3x1+5x2+8x3<=550000', '3x1 + 5x2 + 8x3 <= 550000', '3x1+5x2+8x3≤550000']
+            },
+            4: {
+                obj: ['2x1+4x2+x3+7x4', '2x1 + 4x2 + x3 + 7x4', '2x1+4x2+1x3+7x4'],
+                c1: ['x1+x2+x3+x4=600', 'x1 + x2 + x3 + x4 = 600'],
+                c2: ['x1+x3>=180', 'x1 + x3 >= 180', 'x1+x3≥180'],
+                c3: ['5x1+3x2+15x3+2x4<=4000', '5x1 + 3x2 + 15x3 + 2x4 <= 4000', '5x1+3x2+15x3+2x4≤4000']
+            },
+            5: {
+                obj: ['400x1+600x2+500x3+700x4', '400x1 + 600x2 + 500x3 + 700x4'],
+                c1: ['x1+x2+x3+x4<=100', 'x1 + x2 + x3 + x4 <= 100', 'x1+x2+x3+x4≤100'],
+                c2: ['1000x1+1500x2+1200x3+2000x4<=120000', '1000x1 + 1500x2 + 1200x3 + 2000x4 <= 120000', '1000x1+1500x2+1200x3+2000x4≤120000'],
+                c3: ['5x1+8x2+6x3+10x4<=700', '5x1 + 8x2 + 6x3 + 10x4 <= 700', '5x1+8x2+6x3+10x4≤700']
+            }
+        };
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+        
+        function normalizeAnswer(answer) {
+            return answer.toLowerCase().replace(/\s+/g, '').replace(/≤/g, '<=').replace(/≥/g, '>=');
+        }
+        
+        function checkAnswers(exampleNum) {
+            const prefix = `ex${exampleNum}_`;
+            const keys = answers[exampleNum];
+            let correct = 0;
+            let total = Object.keys(keys).length;
+            let feedbackHTML = '';
+            
+            // Check objective function
+            const objInput = document.getElementById(prefix + 'obj');
+            const objValue = normalizeAnswer(objInput.value);
+            const objCorrect = keys.obj.some(ans => normalizeAnswer(ans) === objValue);
+            
+            if (objCorrect) {
+                objInput.classList.add('correct');
+                objInput.classList.remove('incorrect');
+                correct++;
+            } else {
+                objInput.classList.add('incorrect');
+                objInput.classList.remove('correct');
+            }
+            
+            // Check constraints
+            ['c1', 'c2', 'c3'].forEach((key, index) => {
+                if (keys[key]) {
+                    const input = document.getElementById(prefix + key);
+                    const value = normalizeAnswer(input.value);
+                    const isCorrect = keys[key].some(ans => normalizeAnswer(ans) === value);
+                    
+                    if (isCorrect) {
+                        input.classList.add('correct');
+                        input.classList.remove('incorrect');
+                        correct++;
+                    } else {
+                        input.classList.add('incorrect');
+                        input.classList.remove('correct');
+                    }
+                }
+            });
+            
+            // Update score
+            const score = correct;
+            totalScore += score;
+            
+            // Generate feedback
+            const feedback = document.getElementById(`feedback${exampleNum}`);
+            feedback.classList.add('show');
+            
+            if (correct === total) {
+                feedback.className = 'feedback show success';
+                feedbackHTML = `<strong>Perfect! 🎉</strong> You got all ${total} answers correct! (${score} points earned)`;
+            } else if (correct > 0) {
+                feedback.className = 'feedback show partial';
+                feedbackHTML = `<strong>Good effort!</strong> You got ${correct} out of ${total} correct. (${score} points earned)<br>`;
+                feedbackHTML += `Check the incorrect answers (marked in red) and try again, or continue to see the solution.`;
+            } else {
+                feedback.className = 'feedback show error';
+                feedbackHTML = `<strong>Not quite right.</strong> Review your formulation and try again, or continue to see the solution.`;
+            }
+            
+            feedback.innerHTML = feedbackHTML;
+            
+            // Update total score display
+            if (document.getElementById('totalScore')) {
+                document.getElementById('totalScore').textContent = totalScore;
+            }
+        }
+        
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Update progress bar
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+            
+            // Update total score on final slide
+            if (currentSlide === totalSlides - 1 && document.getElementById('totalScore')) {
+                document.getElementById('totalScore').textContent = totalScore;
+            }
+        }
+        
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft' && currentSlide > 0) {
+                changeSlide(-1);
+            }
+            if (event.key === 'ArrowRight' && currentSlide < totalSlides - 1) {
+                changeSlide(1);
+            }
+        });
+        
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
