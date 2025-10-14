@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integer & Combinatorial Optimization Practice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .slide-container {
+            background: white;
+            width: 100%;
+            max-width: 1100px;
+            min-height: 650px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            padding: 50px;
+            min-height: 650px;
+        }
+
+        .slide.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .slide h1 {
+            color: #667eea;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            border-bottom: 4px solid #764ba2;
+            padding-bottom: 15px;
+        }
+
+        .slide h2 {
+            color: #764ba2;
+            font-size: 1.6rem;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        .slide h3 {
+            color: #667eea;
+            font-size: 1.2rem;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        .problem-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            border-left: 5px solid #764ba2;
+        }
+
+        .difficulty-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .easy {
+            background: #4caf50;
+            color: white;
+        }
+
+        .medium {
+            background: #ff9800;
+            color: white;
+        }
+
+        .hard {
+            background: #f44336;
+            color: white;
+        }
+
+        .input-section {
+            background: #fff9e6;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 5px solid #ff9800;
+        }
+
+        .question {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .question label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .question input, .question textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+            transition: border-color 0.3s;
+        }
+
+        .question textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .question input:focus, .question textarea:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
+
+        .question input.correct, .question textarea.correct {
+            border-color: #4caf50;
+            background: #f1f8f4;
+        }
+
+        .question input.incorrect, .question textarea.incorrect {
+            border-color: #f44336;
+            background: #fef5f5;
+        }
+
+        .hint {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .check-btn {
+            background: #ff9800;
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .check-btn:hover {
+            background: #f57c00;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.success {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            color: #2e7d32;
+        }
+
+        .feedback.partial {
+            background: #fff9e6;
+            border-left: 5px solid #ff9800;
+            color: #f57c00;
+        }
+
+        .feedback.error {
+            background: #fef5f5;
+            border-left: 5px solid #f44336;
+            color: #c62828;
+        }
+
+        .solution-box {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 5px solid #4caf50;
+        }
+
+        .highlight {
+            background: #fff176;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 30px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 50px;
+        }
+
+        .nav-btn {
+            background: #764ba2;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #764ba2;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 5px;
+            background: #4caf50;
+            transition: width 0.3s ease;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #764ba2;
+            color: white;
+        }
+
+        .title-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .title-slide h1 {
+            font-size: 2.8rem;
+            border: none;
+        }
+
+        .title-slide p {
+            font-size: 1.2rem;
+            color: #666;
+            margin-top: 20px;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .score-display {
+            background: #764ba2;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.2rem;
+        }
+
+        .formula-display {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.05rem;
+        }
+
+        .constraint {
+            margin: 8px 0 8px 30px;
+        }
+
+        .binary-indicator {
+            background: #e1bee7;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: 600;
+            color: #4a148c;
+        }
+
+        .category-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .finance {
+            background: #c8e6c9;
+            color: #1b5e20;
+        }
+
+        .marketing {
+            background: #ffccbc;
+            color: #bf360c;
+        }
+
+        .supply-chain {
+            background: #bbdefb;
+            color: #0d47a1;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="progress-bar" id="progressBar"></div>
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">16</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active title-slide">
+            <h1>Integer & Combinatorial Optimization</h1>
+            <p>5 Problems: Finance, Marketing & Supply Chain</p>
+            <p style="margin-top: 30px; font-size: 1rem;">Interactive Practice with Easy, Medium & Hard Levels</p>
+            <p style="margin-top: 20px; font-size: 0.9rem; color: #999;">Use arrow keys or buttons to navigate</p>
+        </div>
+
+        <!-- Example 1: Problem Statement (EASY - Finance) -->
+        <div class="slide">
+            <h1>Example 1: Capital Budgeting</h1>
+            <span class="difficulty-badge easy">EASY</span>
+            <span class="category-tag finance">Finance</span>
+            
+            <div class="problem-box">
+                <h3>Problem Statement</h3>
+                <p>A company has a $500,000 budget to invest in projects. Each project must be either fully funded or not funded at all (binary decision).</p>
+                
+                <table>
+                    <tr>
+                        <th>Project</th>
+                        <th>Investment Required</th>
+                        <th>Expected NPV</th>
+                    </tr>
+                    <tr><td>A</td><td>$150,000</td><td>$200,000</td></tr>
+                    <tr><td>B</td><td>$200,000</td><td>$300,000</td></tr>
+                    <tr><td>C</td><td>$180,000</td><td>$250,000</td></tr>
+                    <tr><td>D</td><td>$120,000</td><td>$150,000</td></tr>
+                </table>
+                
+                <p style="margin-top: 15px;"><strong>Additional Constraint:</strong> If Project A is selected, then Project C must also be selected (dependency).</p>
+                <p><strong>Decision Variables:</strong> x₁, x₂, x₃, x₄ ∈ {0,1} (1 = select project, 0 = don't select)</p>
+                <p><strong>Objective:</strong> Maximize total NPV</p>
+            </div>
+        </div>
+
+        <!-- Example 1: Interactive Questions -->
+        <div class="slide">
+            <h1>Example 1: Formulate the Problem</h1>
+            <div class="input-section">
+                <h3>Enter your formulation:</h3>
+                
+                <div class="question">
+                    <label>1. Objective Function:</label>
+                    <input type="text" id="ex1_obj" placeholder="">
+                    <div class="hint">Maximize the total NPV from selected projects</div>
+                </div>
+
+                <div class="question">
+                    <label>2. Budget Constraint:</label>
+                    <input type="text" id="ex1_c1" placeholder="">
+                    <div class="hint">Total investment cannot exceed $500,000</div>
+                </div>
+
+                <div class="question">
+                    <label>3. Dependency Constraint (A → C):</label>
+                    <input type="text" id="ex1_c2" placeholder="">
+                    <div class="hint">If x1=1, then x3 must equal 1. Can write as: x1 <= x3</div>
+                </div>
+
+                <div class="question">
+                    <label>4. Binary Constraints:</label>
+                    <input type="text" id="ex1_c3" placeholder="">
+                    <div class="hint">All variables are binary (0 or 1)</div>
+                </div>
+
+                <button class="check-btn" onclick="checkAnswers(1)">Check My Answers</button>
+                
+                <div class="feedback" id="feedback1"></div>
+            </div>
+        </div>
+
+        <!-- Example 1: Solution -->
+        <div class="slide">
+            <h1>Example 1: Complete Solution</h1>
+            <div class="solution-box">
+                <h3>Correct Formulation:</h3>
+                <div class="formula-display">
+                    <strong>Objective Function:</strong><br>
+                    Maximize Z = 200,000x₁ + 300,000x₂ + 250,000x₃ + 150,000x₄<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Maximize total NPV. Each project contributes its NPV only if selected (xᵢ = 1).
+                    </div><br>
+                    
+                    <strong>Constraints:</strong><br>
+                    150,000x₁ + 200,000x₂ + 180,000x₃ + 120,000x₄ ≤ 500,000<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Total investment across selected projects cannot exceed the $500,000 budget.
+                    </div><br>
+                    
+                    x₁ ≤ x₃<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Dependency constraint: If Project A is selected (x₁=1), then Project C must be selected (x₃=1). If x₁=0, x₃ can be 0 or 1.
+                    </div><br>
+                    
+                    x₁, x₂, x₃, x₄ ∈ {0, 1}<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Binary variables: Each project is either selected (1) or not selected (0). Cannot partially fund a project.
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 25px;">Optimal Solution:</h3>
+                <div class="binary-indicator">Binary Integer Programming (BIP) Problem</div>
+                <p><span class="highlight">x₁ = 0 (Don't select A)</span>, <span class="highlight">x₂ = 1 (Select B)</span></p>
+                <p><span class="highlight">x₃ = 1 (Select C)</span>, <span class="highlight">x₄ = 1 (Select D)</span></p>
+                <p style="margin-top: 10px;"><strong>Maximum NPV:</strong> <span class="highlight">Z = $700,000</span></p>
+                <p style="margin-top: 10px; font-size: 0.95rem;">Total Investment: $500,000 (exactly at budget)</p>
+            </div>
+        </div>
+
+        <!-- Example 2: Problem Statement (EASY - Marketing) -->
+        <div class="slide">
+            <h1>Example 2: Media Selection</h1>
+            <span class="difficulty-badge easy">EASY</span>
+            <span class="category-tag marketing">Marketing</span>
+            
+            <div class="problem-box">
+                <h3>Problem Statement</h3>
+                <p>A company wants to advertise on different media platforms. Each platform requires a minimum purchase if used.</p>
+                
+                <table>
+                    <tr>
+                        <th>Platform</th>
+                        <th>Cost per Ad</th>
+                        <th>Reach per Ad</th>
+                        <th>Min Ads (if used)</th>
+                        <th>Max Ads</th>
+                    </tr>
+                    <tr><td>TV</td><td>$5,000</td><td>100,000</td><td>3</td><td>10</td></tr>
+                    <tr><td>Radio</td><td>$1,000</td><td>20,000</td><td>5</td><td>15</td></tr>
+                    <tr><td>Online</td><td>$800</td><td>15,000</td><td>4</td><td>20</td></tr>
+                </table>
+                
+                <p style="margin-top: 15px;"><strong>Budget:</strong> $80,000</p>
+                <p><strong>Decision Variables:</strong></p>
+                <ul>
+                    <li>x₁, x₂, x₃ = number of ads on TV, Radio, Online</li>
+                    <li>y₁, y₂, y₃ ∈ {0,1} = 1 if platform is used, 0 otherwise</li>
+                </ul>
+                <p><strong>Objective:</strong> Maximize total reach</p>
+            </div>
+        </div>
+
+        <!-- Example 2: Interactive Questions -->
+        <div class="slide">
+            <h1>Example 2: Formulate the Problem</h1>
+            <div class="input-section">
+                <h3>Enter your formulation:</h3>
+                
+                <div class="question">
+                    <label>1. Objective Function:</label>
+                    <input type="text" id="ex2_obj" placeholder="">
+                    <div class="hint">Maximize total audience reach</div>
+                </div>
+
+                <div class="question">
+                    <label>2. Budget Constraint:</label>
+                    <input type="text" id="ex2_c1" placeholder="">
+                </div>
+
+                <div class="question">
+                    <label>3. Minimum Ads Constraint for TV (if used):</label>
+                    <textarea id="ex2_c2" placeholder=""></textarea>
+                    <div class="hint">If TV is used (y1=1), then x1 >= 3. Use: x1 >= 3y1</div>
+                </div>
+
+                <div class="question">
+                    <label>4. Maximum Ads Constraint for TV:</label>
+                    <input type="text" id="ex2_c3" placeholder="">
+                    <div class="hint">Link x1 to y1 with upper bound</div>
+                </div>
+
+                <button class="check-btn" onclick="checkAnswers(2)">Check My Answers</button>
+                
+                <div class="feedback" id="feedback2"></div>
+            </div>
+        </div>
+
+        <!-- Example 2: Solution -->
+        <div class="slide">
+            <h1>Example 2: Complete Solution</h1>
+            <div class="solution-box">
+                <h3>Correct Formulation:</h3>
+                <div class="formula-display">
+                    <strong>Objective Function:</strong><br>
+                    Maximize Z = 100,000x₁ + 20,000x₂ + 15,000x₃<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Maximize total audience reach across all platforms.
+                    </div><br>
+                    
+                    <strong>Constraints:</strong><br>
+                    5,000x₁ + 1,000x₂ + 800x₃ ≤ 80,000<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Total advertising cost cannot exceed $80,000 budget.
+                    </div><br>
+                    
+                    x₁ ≥ 3y₁,  x₂ ≥ 5y₂,  x₃ ≥ 4y₃<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Minimum purchase requirements: If platform is used (yᵢ=1), must buy minimum ads. If not used (yᵢ=0), xᵢ=0.
+                    </div><br>
+                    
+                    x₁ ≤ 10y₁,  x₂ ≤ 15y₂,  x₃ ≤ 20y₃<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Links integer variables (ads) to binary variables (platform selection) and enforces maximum limits.
+                    </div><br>
+                    
+                    x₁, x₂, x₃ ≥ 0 and integer;  y₁, y₂, y₃ ∈ {0, 1}<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → xᵢ must be non-negative integers (number of ads), yᵢ are binary (use platform or not).
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 25px;">Optimal Solution:</h3>
+                <div class="binary-indicator">Mixed Integer Programming (MIP) Problem</div>
+                <p><span class="highlight">x₁ = 10 TV ads</span>, <span class="highlight">x₂ = 15 Radio ads</span>, <span class="highlight">x₃ = 4 Online ads</span></p>
+                <p><span class="highlight">y₁ = 1 (Use TV)</span>, <span class="highlight">y₂ = 1 (Use Radio)</span>, <span class="highlight">y₃ = 1 (Use Online)</span></p>
+                <p style="margin-top: 10px;"><strong>Maximum Reach:</strong> <span class="highlight">Z = 1,360,000 people</span></p>
+            </div>
+        </div>
+
+        <!-- Example 3: Problem Statement (MEDIUM - Supply Chain) -->
+        <div class="slide">
+            <h1>Example 3: Facility Location</h1>
+            <span class="difficulty-badge medium">MEDIUM</span>
+            <span class="category-tag supply-chain">Supply Chain</span>
+            
+            <div class="problem-box">
+                <h3>Problem Statement</h3>
+                <p>A company must decide which warehouses to open and how to assign customers to warehouses.</p>
+                
+                <table>
+                    <tr>
+                        <th>Warehouse</th>
+                        <th>Fixed Cost</th>
+                        <th>Capacity (units)</th>
+                    </tr>
+                    <tr><td>W1</td><td>$100,000</td><td>500</td></tr>
+                    <tr><td>W2</td><td>$150,000</td><td>800</td></tr>
+                    <tr><td>W3</td><td>$120,000</td><td>600</td></tr>
+                </table>
+                
+                <p style="margin-top: 15px;"><strong>Transportation Costs (per unit):</strong></p>
+                <table>
+                    <tr>
+                        <th></th>
+                        <th>Customer 1 (demand: 300)</th>
+                        <th>Customer 2 (demand: 400)</th>
+                        <th>Customer 3 (demand: 250)</th>
+                    </tr>
+                    <tr><td>W1</td><td>$5</td><td>$8</td><td>$6</td></tr>
+                    <tr><td>W2</td><td>$7</td><td>$4</td><td>$5</td></tr>
+                    <tr><td>W3</td><td>$6</td><td>$7</td><td>$3</td></tr>
+                </table>
+                
+                <p style="margin-top: 15px;"><strong>Decision Variables:</strong></p>
+                <ul>
+                    <li>yᵢ ∈ {0,1} = 1 if warehouse i is opened</li>
+                    <li>xᵢⱼ = units shipped from warehouse i to customer j</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Example 3: Interactive Questions -->
+        <div class="slide">
+            <h1>Example 3: Formulate the Problem</h1>
+            <div class="input-section">
+                <h3>Enter your formulation (use x11, x12, x13 for W1, x21-x23 for W2, x31-x33 for W3):</h3>
+                
+                <div class="question">
+                    <label>1. Objective Function (minimize total cost):</label>
+                    <textarea id="ex3_obj" placeholder=""></textarea>
+                    <div class="hint">Include fixed costs (for y variables) + transportation costs (for x variables)</div>
+                </div>
+
+                <div class="question">
+                    <label>2. Demand Constraint for Customer 1 (must receive exactly 300 units):</label>
+                    <input type="text" id="ex3_c1" placeholder="">
+                </div>
+
+                <div class="question">
+                    <label>3. Capacity Constraint for Warehouse 1 (can't exceed 500 units):</label>
+                    <textarea id="ex3_c2" placeholder=""></textarea>
+                    <div class="hint">Total shipments from W1 ≤ 500 only if warehouse is open (y1=1)</div>
+                </div>
+
+                <button class="check-btn" onclick="checkAnswers(3)">Check My Answers</button>
+                
+                <div class="feedback" id="feedback3"></div>
+            </div>
+        </div>
+
+        <!-- Example 3: Solution -->
+        <div class="slide">
+            <h1>Example 3: Complete Solution</h1>
+            <div class="solution-box">
+                <h3>Correct Formulation:</h3>
+                <div class="formula-display">
+                    <strong>Objective Function:</strong><br>
+                    Minimize Z = 100,000y₁ + 150,000y₂ + 120,000y₃<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;+ 5x₁₁ + 8x₁₂ + 6x₁₃ + 7x₂₁ + 4x₂₂ + 5x₂₃ + 6x₃₁ + 7x₃₂ + 3x₃₃<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Minimize total cost = fixed costs for opening warehouses + variable transportation costs.
+                    </div><br>
+                    
+                    <strong>Constraints:</strong><br>
+                    <strong>Demand Constraints:</strong><br>
+                    x₁₁ + x₂₁ + x₃₁ = 300  (Customer 1)<br>
+                    x₁₂ + x₂₂ + x₃₂ = 400  (Customer 2)<br>
+                    x₁₃ + x₂₃ + x₃₃ = 250  (Customer 3)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Each customer must receive exactly their demand from all warehouses combined.
+                    </div><br>
+                    
+                    <strong>Capacity Constraints:</strong><br>
+                    x₁₁ + x₁₂ + x₁₃ ≤ 500y₁  (W1)<br>
+                    x₂₁ + x₂₂ + x₂₃ ≤ 800y₂  (W2)<br>
+                    x₃₁ + x₃₂ + x₃₃ ≤ 600y₃  (W3)<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Can only ship from a warehouse if it's open (yᵢ=1). If open, total shipments cannot exceed capacity.
+                    </div><br>
+                    
+                    xᵢⱼ ≥ 0;  y₁, y₂, y₃ ∈ {0, 1}<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Shipment quantities are continuous non-negative; warehouse decisions are binary.
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 25px;">Optimal Solution:</h3>
+                <div class="binary-indicator">Mixed Integer Programming (MIP) Problem</div>
+                <p><span class="highlight">y₁ = 0 (Don't open W1)</span>, <span class="highlight">y₂ = 1 (Open W2)</span>, <span class="highlight">y₃ = 1 (Open W3)</span></p>
+                <p style="margin-top: 10px;"><strong>Shipments:</strong></p>
+                <p>W2 → Customer 1: 300, Customer 2: 400, Customer 3: 0</p>
+                <p>W3 → Customer 1: 0, Customer 2: 0, Customer 3: 250</p>
+                <p style="margin-top: 10px;"><strong>Minimum Total Cost:</strong> <span class="highlight">Z = $275,850</span></p>
+            </div>
+        </div>
+
+        <!-- Example 4: Problem Statement (MEDIUM - Finance) -->
+        <div class="slide">
+            <h1>Example 4: Portfolio with Transaction Lots</h1>
+            <span class="difficulty-badge medium">MEDIUM</span>
+            <span class="category-tag finance">Finance</span>
+            
+            <div class="problem-box">
+                <h3>Problem Statement</h3>
+                <p>An investor has $1,000,000 to invest in bonds. Bonds must be purchased in lots of $50,000 each.</p>
+                
+                <table>
+                    <tr>
+                        <th>Bond</th>
+                        <th>Return (%)</th>
+                        <th>Risk Score</th>
+                        <th>Min Lots</th>
+                        <th>Max Lots</th>
+                    </tr>
+                    <tr><td>A (Corporate)</td><td>7%</td><td>4</td><td>0</td><td>8</td></tr>
+                    <tr><td>B (Municipal)</td><td>5%</td><td>2</td><td>0</td><td>10</td></tr>
+                    <tr><td>C (Treasury)</td><td>4%</td><td>1</td><td>2</td><td>12</td></tr>
+                    <tr><td>D (High-Yield)</td><td>9%</td><td>7</td><td>0</td><td>6</td></tr>
+                </table>
+                
+                <p style="margin-top: 15px;"><strong>Constraints:</strong></p>
+                <ul>
+                    <li>Must invest at least 80% of available funds</li>
+                    <li>Average risk score cannot exceed 3.5</li>
+                    <li>At least 20% must be in Treasury bonds (C)</li>
+                </ul>
+                <p><strong>Decision Variables:</strong> x₁, x₂, x₃, x₄ = number of lots purchased (integers)</p>
+            </div>
+        </div>
+
+        <!-- Example 4: Interactive Questions -->
+        <div class="slide">
+            <h1>Example 4: Formulate the Problem</h1>
+            <div class="input-section">
+                <h3>Enter your formulation:</h3>
+                
+                <div class="question">
+                    <label>1. Objective Function (maximize return in dollars):</label>
+                    <input type="text" id="ex4_obj" placeholder="">
+                    <div class="hint">Each lot is $50,000. Return = lot_value × return_percentage</div>
+                </div>
+
+                <div class="question">
+                    <label>2. Minimum Investment Constraint (at least 80% of $1M):</label>
+                    <input type="text" id="ex4_c1" placeholder="">
+                    <div class="hint">Total investment ≥ 800,000</div>
+                </div>
+
+                <div class="question">
+                    <label>3. Risk Constraint (average risk ≤ 3.5):</label>
+                    <textarea id="ex4_c2" placeholder=""></textarea>
+                    <div class="hint">Weighted average: (4x1 + 2x2 + x3 + 7x4)/(x1 + x2 + x3 + x4) ≤ 3.5</div>
+                </div>
+
+                <div class="question">
+                    <label>4. Treasury Minimum Constraint (at least 20% in bond C):</label>
+                    <input type="text" id="ex4_c3" placeholder="">
+                </div>
+
+                <button class="check-btn" onclick="checkAnswers(4)">Check My Answers</button>
+                
+                <div class="feedback" id="feedback4"></div>
+            </div>
+        </div>
+
+        <!-- Example 4: Solution -->
+        <div class="slide">
+            <h1>Example 4: Complete Solution</h1>
+            <div class="solution-box">
+                <h3>Correct Formulation:</h3>
+                <div class="formula-display">
+                    <strong>Objective Function:</strong><br>
+                    Maximize Z = 3,500x₁ + 2,500x₂ + 2,000x₃ + 4,500x₄<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Each lot is $50,000. Returns: 7% × $50k = $3,500, 5% × $50k = $2,500, etc.
+                    </div><br>
+                    
+                    <strong>Constraints:</strong><br>
+                    50,000(x₁ + x₂ + x₃ + x₄) ≥ 800,000<br>
+                    or: x₁ + x₂ + x₃ + x₄ ≥ 16<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Must invest at least 80% of $1M = $800,000 = 16 lots.
+                    </div><br>
+                    
+                    4x₁ + 2x₂ + x₃ + 7x₄ ≤ 3.5(x₁ + x₂ + x₃ + x₄)<br>
+                    or: 0.5x₁ - 1.5x₂ - 2.5x₃ + 3.5x₄ ≤ 0<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Average risk score cannot exceed 3.5. Multiply both sides by total lots to eliminate division.
+                    </div><br>
+                    
+                    x₃ ≥ 0.2(x₁ + x₂ + x₃ + x₄)<br>
+                    or: -0.2x₁ - 0.2x₂ + 0.8x₃ - 0.2x₄ ≥ 0<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Treasury bonds must be at least 20% of total investment.
+                    </div><br>
+                    
+                    x₁ ≤ 8, x₂ ≤ 10, 2 ≤ x₃ ≤ 12, x₄ ≤ 6<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Individual bond limits and minimum Treasury requirement.
+                    </div><br>
+                    
+                    x₁, x₂, x₃, x₄ ≥ 0 and integer<br>
+                    <div style="color: #555; font-size: 0.95rem; margin-top: 5px;">
+                    → Must purchase whole lots only (integer variables).
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 25px;">Optimal Solution:</h3>
+                <div class="binary-indicator">Integer Programming (IP) Problem</div>
+                <p><span class="highlight">x₁ = 6 lots ($300k in Corporate)</span>, <span class="highlight">x₂ = 0 lots</span></p>
+                <p><span class="highlight">x₃ = 10 lots ($500k in Treasury)</span>, <span class="highlight">x₄ = 4 lots ($200k in High-Yield)</span></p>
+                <p style="margin-top: 10px;"><strong>Maximum Return:</strong> <span class="highlight">Z = $59,000</span></p>
+            </div>
+        </div>
+
+        <!-- Example 5: Problem Statement (HARD - Supply Chain) -->
+        <div class="slide">
+            <h1>Example 5: Production Planning with Setup Costs</h1>
+            <span class="difficulty-badge hard">HARD</span>
+            <span class="category-tag supply-chain">Supply Chain</span>
+            
+            <div class="problem-box">
+                <h3>Problem Statement</h3>
+                <p>A factory produces 3 products over 4 time periods. Each product incurs a setup cost if production occurs in that period.</p>
+                
+                <table style="font-size: 0.85rem;">
+                    <tr>
+                        <th>Product</th>
+                        <th>Setup Cost</th>
+                        <th>Variable Cost/unit</th>
+                        <th>Holding Cost/unit/period</th>
+                        <th>Capacity/period</th>
+                    </tr>
+                    <tr><td>P1</td><td>$5,000</td><td>$20</td><td>$2</td><td>500 units</td></tr>
+                    <tr><td>P2</td><td>$8,000</td><td>$30</td><td>$3</td><td>400 units</td></tr>
+                    <tr><td>P3</td><td>$6,000</td><td>$25</td><td>$2.5</td><td>450 units</td></tr>
+                </table>
+                
+                <p style="margin-top: 10px;"><strong>Demand by Period:</strong></p>
+                <table style="font-size: 0.85rem;">
+                    <tr>
+                        <th></th>
+                        <th>Period 1</th>
+                        <th>Period 2</th>
+                        <th>Period 3</th>
+                        <th>Period 4</th>
+                    </tr>
+                    <tr><td>P1</td><td>300</td><td>400</td><td>350</td><td>300</td></tr>
+                    <tr><td>P2</td><td>200</td><td>300</td><td>250</td><td>350</td></tr>
+                    <tr><td>P3</td><td>250</td><td>300</td><td>400</td><td>300</td></tr>
+                </table>
+                
+                <p style="margin-top: 15px;"><strong>Decision Variables:</strong></p>
+                <ul>
+                    <li>xᵢₜ = units of product i produced in period t</li>
+                    <li>Iᵢₜ = inventory of product i at end of period t</li>
+                    <li>yᵢₜ ∈ {0,1} = 1 if product i is produced in period t</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Example 5: Interactive Questions -->
+        <div class="slide">
+            <h1>Example 5: Formulate the Problem</h1>
+            <div class="input-section">
+                <h3>This is a complex problem. Focus on Period 1 for Product P1:</h3>
+                
+                <div class="question">
+                    <label>1. Objective Function Components (general form):</label>
+                    <textarea id="ex5_obj" placeholder=""></textarea>
+                    <div class="hint">Minimize: Setup costs + Production costs + Holding costs</div>
+                </div>
+
+                <div class="question">
+                    <label>2. Inventory Balance for P1 in Period 1:</label>
+                    <input type="text" id="ex5_c1" placeholder="">
+                    <div class="hint">Ending inventory = Beginning inventory + Production - Demand. Initial inventory = 0.</div>
+                </div>
+
+                <div class="question">
+                    <label>3. Setup-Production Link for P1 in Period 1:</label>
+                    <textarea id="ex5_c2" placeholder=""></textarea>
+                    <div class="hint">Can only produce if setup occurs: x11 ≤ M × y11, where M is large number (e.g., 500)</div>
+                </div>
+
+                <button class="check-btn" onclick="checkAnswers(5)">Check My Answers</button>
+                
+                <div class="feedback" id="feedback5"></div>
+            </div>
+        </div>
+
+        <!-- Example 5: Solution -->
+        <div class="slide">
+            <h1>Example 5: Complete Solution</h1>
+            <div class="solution-box">
+                <h3>Correct Formulation (Simplified):</h3>
+                <div class="formula-display" style="font-size: 0.95rem;">
+                    <strong>Objective Function:</strong><br>
+                    Minimize Z = Σ(Setup costs) + Σ(Production costs) + Σ(Holding costs)<br>
+                    = Σᵢ Σₜ [Setup_costᵢ × yᵢₜ + Var_costᵢ × xᵢₜ + Hold_costᵢ × Iᵢₜ]<br>
+                    <div style="color: #555; font-size: 0.9rem; margin-top: 5px;">
+                    → Minimize total cost across all products and periods including fixed setup costs when production occurs.
+                    </div><br>
+                    
+                    <strong>Key Constraints (for each product i, period t):</strong><br>
+                    <strong>1. Inventory Balance:</strong><br>
+                    Iᵢ,ₜ₋₁ + xᵢₜ - Dᵢₜ = Iᵢₜ<br>
+                    <div style="color: #555; font-size: 0.9rem; margin-top: 5px;">
+                    → Inventory flow: Previous inventory + Production - Demand = Ending inventory.
+                    </div><br>
+                    
+                    <strong>2. Setup-Production Linkage:</strong><br>
+                    xᵢₜ ≤ Capacityᵢ × yᵢₜ<br>
+                    <div style="color: #555; font-size: 0.9rem; margin-top: 5px;">
+                    → Can only produce if setup occurs (yᵢₜ=1). If no setup (yᵢₜ=0), then xᵢₜ=0.
+                    </div><br>
+                    
+                    <strong>3. Capacity Constraint:</strong><br>
+                    xᵢₜ ≤ Capacityᵢ<br>
+                    <div style="color: #555; font-size: 0.9rem; margin-top: 5px;">
+                    → Production in each period cannot exceed capacity limit.
+                    </div><br>
+                    
+                    xᵢₜ, Iᵢₜ ≥ 0;  yᵢₜ ∈ {0, 1}<br>
+                    <div style="color: #555; font-size: 0.9rem; margin-top: 5px;">
+                    → Production and inventory are non-negative continuous; setup decisions are binary.
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 25px;">Optimal Solution (Sample):</h3>
+                <div class="binary-indicator">Mixed Integer Programming (MIP) - Lot-Sizing Problem</div>
+                <p style="font-size: 0.95rem;"><strong>Period 1:</strong> Produce P1=700, P2=500, P3=550 (all setups = 1)</p>
+                <p style="font-size: 0.95rem;"><strong>Period 2:</strong> Produce P1=0, P2=0, P3=0 (use inventory)</p>
+                <p style="font-size: 0.95rem;"><strong>Period 3:</strong> Produce P1=650, P2=600, P3=700</p>
+                <p style="font-size: 0.95rem;"><strong>Period 4:</strong> Use remaining inventory</p>
+                <p style="margin-top: 10px;"><strong>Minimum Total Cost:</strong> <span class="highlight">Z ≈ $95,000</span></p>
+            </div>
+        </div>
+
+        <!-- Final Summary Slide -->
+        <div class="slide">
+            <h1>Congratulations! 🎉</h1>
+            <div class="solution-box">
+                <h2>You've completed all 5 Integer Optimization problems!</h2>
+                <p style="margin-top: 20px; font-size: 1.1rem;">You've practiced:</p>
+                <ul style="font-size: 1.05rem; margin-top: 15px;">
+                    <li><strong>Binary Integer Programming (BIP)</strong> - Capital budgeting</li>
+                    <li><strong>Mixed Integer Programming (MIP)</strong> - Media selection, facility location, lot-sizing</li>
+                    <li><strong>Integer Programming (IP)</strong> - Portfolio with lots</li>
+                    <li><strong>Logical constraints</strong> - Dependencies, minimum purchases, setup costs</li>
+                    <li><strong>Applications</strong> - Finance, marketing, and supply chain</li>
+                </ul>
+                
+                <h3 style="margin-top: 30px;">Problem Types by Difficulty:</h3>
+                <p style="margin-top: 10px;"><span class="difficulty-badge easy">EASY</span> Examples 1-2: Basic binary decisions</p>
+                <p style="margin-top: 5px;"><span class="difficulty-badge medium">MEDIUM</span> Examples 3-4: Multiple decision types, complex constraints</p>
+                <p style="margin-top: 5px;"><span class="difficulty-badge hard">HARD</span> Example 5: Multi-period planning with inventory</p>
+                
+                <div class="score-display" style="margin-top: 30px;">
+                    <strong>Total Score: <span id="totalScore">0</span> / 55 points</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        let totalScore = 0;
+        
+        // Answer keys for each example (simplified for checking)
+        const answers = {
+            1: {
+                obj: ['200000x1+300000x2+250000x3+150000x4', '200,000x1+300,000x2+250,000x3+150,000x4'],
+                c1: ['150000x1+200000x2+180000x3+120000x4<=500000', '150,000x1+200,000x2+180,000x3+120,000x4<=500,000'],
+                c2: ['x1<=x3', 'x1≤x3'],
+                c3: ['x1,x2,x3,x4∈{0,1}', 'x1,x2,x3,x4in{0,1}', 'xi∈{0,1}', 'xiin{0,1}']
+            },
+            2: {
+                obj: ['100000x1+20000x2+15000x3', '100,000x1+20,000x2+15,000x3'],
+                c1: ['5000x1+1000x2+800x3<=80000', '5,000x1+1,000x2+800x3<=80,000'],
+                c2: ['x1>=3y1', 'x1≥3y1'],
+                c3: ['x1<=10y1', 'x1≤10y1']
+            },
+            3: {
+                obj: ['100000y1+150000y2+120000y3+5x11+8x12+6x13+7x21+4x22+5x23+6x31+7x32+3x33'],
+                c1: ['x11+x21+x31=300'],
+                c2: ['x11+x12+x13<=500y1', 'x11+x12+x13≤500y1']
+            },
+            4: {
+                obj: ['3500x1+2500x2+2000x3+4500x4'],
+                c1: ['x1+x2+x3+x4>=16', 'x1+x2+x3+x4≥16', '50000(x1+x2+x3+x4)>=800000'],
+                c2: ['4x1+2x2+x3+7x4<=3.5(x1+x2+x3+x4)', '0.5x1-1.5x2-2.5x3+3.5x4<=0'],
+                c3: ['x3>=0.2(x1+x2+x3+x4)', 'x3≥0.2(x1+x2+x3+x4)', '-0.2x1-0.2x2+0.8x3-0.2x4>=0']
+            },
+            5: {
+                obj: ['setupcosts+productioncosts+holdingcosts', 'minimize'],
+                c1: ['x11-300=i11', 'i11=x11-300', '0+x11-300=i11'],
+                c2: ['x11<=500y11', 'x11≤500y11', 'x11<=my11']
+            }
+        };
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+        
+        function normalizeAnswer(answer) {
+            return answer.toLowerCase()
+                .replace(/\s+/g, '')
+                .replace(/≤/g, '<=')
+                .replace(/≥/g, '>=')
+                .replace(/,/g, '')
+                .replace(/\$/g, '');
+        }
+        
+        function checkAnswers(exampleNum) {
+            const prefix = `ex${exampleNum}_`;
+            const keys = answers[exampleNum];
+            let correct = 0;
+            let total = Object.keys(keys).length;
+            
+            // Check each answer
+            ['obj', 'c1', 'c2', 'c3'].forEach(key => {
+                if (keys[key]) {
+                    const input = document.getElementById(prefix + key);
+                    if (input) {
+                        const value = normalizeAnswer(input.value);
+                        const isCorrect = keys[key].some(ans => normalizeAnswer(ans) === value || value.includes(normalizeAnswer(ans)));
+                        
+                        if (isCorrect) {
+                            input.classList.add('correct');
+                            input.classList.remove('incorrect');
+                            correct++;
+                        } else {
+                            input.classList.add('incorrect');
+                            input.classList.remove('correct');
+                        }
+                    }
+                }
+            });
+            
+            // Update score
+            totalScore += correct * 3; // 3 points per correct answer
+            
+            // Generate feedback
+            const feedback = document.getElementById(`feedback${exampleNum}`);
+            feedback.classList.add('show');
+            
+            let feedbackHTML = '';
+            if (correct === total) {
+                feedback.className = 'feedback show success';
+                feedbackHTML = `<strong>Perfect! 🎉</strong> You got all ${total} answers correct! (${correct * 3} points earned)`;
+            } else if (correct > 0) {
+                feedback.className = 'feedback show partial';
+                feedbackHTML = `<strong>Good effort!</strong> You got ${correct} out of ${total} correct. (${correct * 3} points earned)<br>`;
+                feedbackHTML += `Check the incorrect answers (marked in red) and try again, or continue to see the solution.`;
+            } else {
+                feedback.className = 'feedback show error';
+                feedbackHTML = `<strong>Not quite right.</strong> Review your formulation and try again, or continue to see the solution.`;
+            }
+            
+            feedback.innerHTML = feedbackHTML;
+            
+            // Update total score display
+            if (document.getElementById('totalScore')) {
+                document.getElementById('totalScore').textContent = totalScore;
+            }
+        }
+        
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Update progress bar
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+            
+            // Update total score on final slide
+            if (currentSlide === totalSlides - 1 && document.getElementById('totalScore')) {
+                document.getElementById('totalScore').textContent = totalScore;
+            }
+        }
+        
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft' && currentSlide > 0) {
+                changeSlide(-1);
+            }
+            if (event.key === 'ArrowRight' && currentSlide < totalSlides - 1) {
+                changeSlide(1);
+            }
+        });
+        
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
