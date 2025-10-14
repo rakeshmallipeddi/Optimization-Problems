@@ -79,6 +79,10 @@
             background: linear-gradient(90deg, #667eea, #764ba2);
         }
 
+        .lesson-card.quiz::before {
+            background: linear-gradient(90deg, #f093fb, #f5576c);
+        }
+
         .lesson-number {
             display: inline-block;
             background: #667eea;
@@ -92,6 +96,10 @@
 
         .lesson-card.lp .lesson-number {
             background: #2a5298;
+        }
+
+        .lesson-card.quiz .lesson-number {
+            background: #f5576c;
         }
 
         .lesson-card h2 {
@@ -149,6 +157,10 @@
             color: #2a5298;
         }
 
+        .lesson-card.quiz .stat-number {
+            color: #f5576c;
+        }
+
         .stat-label {
             font-size: 0.85rem;
             color: #666;
@@ -170,6 +182,10 @@
 
         .lesson-card.lp .start-btn {
             background: linear-gradient(135deg, #1e3c72, #2a5298);
+        }
+
+        .lesson-card.quiz .start-btn {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
         }
 
         .start-btn:hover {
@@ -257,6 +273,10 @@
             color: #880e4f;
         }
 
+        .quiz-wide {
+            grid-column: 1 / -1;
+        }
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2.5rem;
@@ -268,6 +288,10 @@
 
             .stats {
                 grid-template-columns: 1fr;
+            }
+
+            .quiz-wide {
+                grid-column: auto;
             }
         }
     </style>
@@ -366,12 +390,58 @@
 
                 <a href="integer-optimization.html" class="start-btn">Start Lesson 2 →</a>
             </div>
+
+            <!-- Quiz -->
+            <div class="lesson-card quiz quiz-wide">
+                <span class="lesson-number">ADAPTIVE QUIZ</span>
+                <h2>Test Your Knowledge</h2>
+                <p>Challenge yourself with 10 questions that get progressively harder based on your performance. Mix of multiple choice and fill-in-the-blank questions covering constraints, objectives, and optimization concepts.</p>
+                
+                <div class="difficulty-tags">
+                    <span class="difficulty-tag easy">Easy Questions</span>
+                    <span class="difficulty-tag medium">Medium Questions</span>
+                    <span class="difficulty-tag hard">Hard Questions</span>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-number">10</div>
+                        <div class="stat-label">Questions</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">⚡</div>
+                        <div class="stat-label">Adaptive</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">🔥</div>
+                        <div class="stat-label">Streak Tracking</div>
+                    </div>
+                </div>
+
+                <ul class="lesson-features">
+                    <li>Questions 1-4: Easy level fundamentals</li>
+                    <li>Questions 5-7: Medium complexity with dependencies</li>
+                    <li>Questions 8-10: Hard multi-period and advanced concepts</li>
+                    <li>Instant feedback with detailed explanations</li>
+                    <li>Performance analytics and streak counter</li>
+                </ul>
+
+                <div style="margin-bottom: 15px;">
+                    <span class="category-badge finance">Finance</span>
+                    <span class="category-badge marketing">Marketing</span>
+                    <span class="category-badge supply-chain">Supply Chain</span>
+                    <span class="category-badge production">Production</span>
+                </div>
+
+                <a href="quiz.html" class="start-btn">Take Quiz →</a>
+            </div>
         </div>
 
         <div class="footer">
             <h3>📚 Learning Path</h3>
-            <p><strong>Recommended:</strong> Start with Lesson 1 (Linear Programming) to build foundational knowledge, then advance to Lesson 2 (Integer Optimization) for more complex discrete decision problems.</p>
-            <p style="margin-top: 15px;"><strong>Both lessons feature:</strong> Interactive problem-solving • Instant feedback • Detailed explanations • Step-by-step solutions</p>
+            <p><strong>Recommended:</strong> Start with Lesson 1 (Linear Programming) to build foundational knowledge, then advance to Lesson 2 (Integer Optimization) for more complex discrete decision problems. Finally, test your knowledge with the Adaptive Quiz!</p>
+            <p style="margin-top: 15px;"><strong>All lessons feature:</strong> Interactive problem-solving • Instant feedback • Detailed explanations • Step-by-step solutions</p>
+            <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.8;">💡 Tip: Complete both lessons before taking the quiz for the best experience!</p>
         </div>
     </div>
 </body>
