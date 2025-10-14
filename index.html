@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimization Lessons - Interactive Learning Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+        }
+
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .lesson-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .lesson-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+        }
+
+        .lesson-card.lp::before {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+        }
+
+        .lesson-card.ip::before {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .lesson-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .lesson-card.lp .lesson-number {
+            background: #2a5298;
+        }
+
+        .lesson-card h2 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .lesson-card p {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+        }
+
+        .lesson-features {
+            list-style: none;
+            margin: 25px 0;
+        }
+
+        .lesson-features li {
+            padding: 8px 0;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .lesson-features li:before {
+            content: "✓ ";
+            color: #4caf50;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .lesson-card.lp .stat-number {
+            color: #2a5298;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .start-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .lesson-card.lp .start-btn {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .difficulty-tags {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .difficulty-tag {
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .easy {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .medium {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .hard {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 60px;
+            padding: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .footer h3 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .footer p {
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .finance {
+            background: #c8e6c9;
+            color: #1b5e20;
+        }
+
+        .marketing {
+            background: #ffccbc;
+            color: #bf360c;
+        }
+
+        .supply-chain {
+            background: #bbdefb;
+            color: #0d47a1;
+        }
+
+        .production {
+            background: #f8bbd0;
+            color: #880e4f;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .lessons-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Optimization Interactive Lessons</h1>
+            <p>Master Linear Programming and Integer Optimization through hands-on practice</p>
+        </div>
+
+        <div class="lessons-grid">
+            <!-- Lesson 1: Linear Programming -->
+            <div class="lesson-card lp">
+                <span class="lesson-number">LESSON 1</span>
+                <h2>Linear Programming</h2>
+                <p>Learn the fundamentals of Linear Programming through 5 interactive examples covering production planning, diet problems, investment portfolios, and more.</p>
+                
+                <div class="difficulty-tags">
+                    <span class="difficulty-tag easy">Easy Problems</span>
+                    <span class="difficulty-tag medium">Medium Problems</span>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-number">5</div>
+                        <div class="stat-label">Examples</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">3-4</div>
+                        <div class="stat-label">Variables</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">55</div>
+                        <div class="stat-label">Max Points</div>
+                    </div>
+                </div>
+
+                <ul class="lesson-features">
+                    <li>Production planning and resource allocation</li>
+                    <li>Diet optimization and cost minimization</li>
+                    <li>Investment portfolio with risk constraints</li>
+                    <li>Transportation and logistics problems</li>
+                    <li>Agricultural planning with multiple resources</li>
+                </ul>
+
+                <div style="margin-bottom: 15px;">
+                    <span class="category-badge finance">Finance</span>
+                    <span class="category-badge production">Manufacturing</span>
+                    <span class="category-badge supply-chain">Supply Chain</span>
+                </div>
+
+                <a href="linear-programming.html" class="start-btn">Start Lesson 1 →</a>
+            </div>
+
+            <!-- Lesson 2: Integer & Combinatorial Optimization -->
+            <div class="lesson-card ip">
+                <span class="lesson-number">LESSON 2</span>
+                <h2>Integer & Combinatorial Optimization</h2>
+                <p>Explore discrete optimization with binary and integer decision variables. Master capital budgeting, facility location, and production planning with setup costs.</p>
+                
+                <div class="difficulty-tags">
+                    <span class="difficulty-tag easy">Easy Problems</span>
+                    <span class="difficulty-tag medium">Medium Problems</span>
+                    <span class="difficulty-tag hard">Hard Problems</span>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-number">5</div>
+                        <div class="stat-label">Examples</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">BIP/MIP</div>
+                        <div class="stat-label">Problem Types</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">55</div>
+                        <div class="stat-label">Max Points</div>
+                    </div>
+                </div>
+
+                <ul class="lesson-features">
+                    <li>Capital budgeting with project dependencies</li>
+                    <li>Media selection with minimum purchases</li>
+                    <li>Facility location with customer assignment</li>
+                    <li>Portfolio optimization with transaction lots</li>
+                    <li>Multi-period production with setup costs</li>
+                </ul>
+
+                <div style="margin-bottom: 15px;">
+                    <span class="category-badge finance">Finance</span>
+                    <span class="category-badge marketing">Marketing</span>
+                    <span class="category-badge supply-chain">Supply Chain</span>
+                </div>
+
+                <a href="integer-optimization.html" class="start-btn">Start Lesson 2 →</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <h3>📚 Learning Path</h3>
+            <p><strong>Recommended:</strong> Start with Lesson 1 (Linear Programming) to build foundational knowledge, then advance to Lesson 2 (Integer Optimization) for more complex discrete decision problems.</p>
+            <p style="margin-top: 15px;"><strong>Both lessons feature:</strong> Interactive problem-solving • Instant feedback • Detailed explanations • Step-by-step solutions</p>
+        </div>
+    </div>
+</body>
+</html>
