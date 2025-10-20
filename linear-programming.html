@@ -937,11 +937,9 @@
                 objInput.classList.add('correct');
                 objInput.classList.remove('incorrect');
                 correct++;
-                onCorrectAnswer(5);
             } else {
                 objInput.classList.add('incorrect');
                 objInput.classList.remove('correct');
-                onIncorrectAnswer();
             }
             
             // Check constraints
@@ -955,11 +953,9 @@
                         input.classList.add('correct');
                         input.classList.remove('incorrect');
                         correct++;
-                        onCorrectAnswer(5);
                     } else {
                         input.classList.add('incorrect');
                         input.classList.remove('correct');
-                        onIncorrectAnswer();
                     }
                 }
             });
@@ -1010,7 +1006,6 @@
             // Update total score on final slide
             if (currentSlide === totalSlides - 1 && document.getElementById('totalScore')) {
                 document.getElementById('totalScore').textContent = totalScore;
-                onLessonComplete('Linear Programming', totalScore, 55);
             }
         }
         
@@ -1031,6 +1026,5 @@
         // Initialize
         showSlide(0);
     </script>
-    <script src="gamification.js"></script>
 </body>
 </html>
