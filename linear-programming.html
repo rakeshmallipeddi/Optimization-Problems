@@ -941,7 +941,7 @@
             } else {
                 objInput.classList.add('incorrect');
                 objInput.classList.remove('correct');
-                onCorrectAnswer(5);
+                onIncorrectAnswer();
             }
             
             // Check constraints
@@ -955,11 +955,11 @@
                         input.classList.add('correct');
                         input.classList.remove('incorrect');
                         correct++;
-                        checkAnswers()
+                        onCorrectAnswer(5);
                     } else {
                         input.classList.add('incorrect');
                         input.classList.remove('correct');
-                        checkAnswers()
+                        onIncorrectAnswer();
                     }
                 }
             });
@@ -1010,6 +1010,7 @@
             // Update total score on final slide
             if (currentSlide === totalSlides - 1 && document.getElementById('totalScore')) {
                 document.getElementById('totalScore').textContent = totalScore;
+                onLessonComplete('Linear Programming', totalScore, 55);
             }
         }
         
