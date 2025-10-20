@@ -937,9 +937,11 @@
                 objInput.classList.add('correct');
                 objInput.classList.remove('incorrect');
                 correct++;
+                onCorrectAnswer(5);
             } else {
                 objInput.classList.add('incorrect');
                 objInput.classList.remove('correct');
+                onCorrectAnswer(5);
             }
             
             // Check constraints
@@ -953,9 +955,11 @@
                         input.classList.add('correct');
                         input.classList.remove('incorrect');
                         correct++;
+                        checkAnswers()
                     } else {
                         input.classList.add('incorrect');
                         input.classList.remove('correct');
+                        checkAnswers()
                     }
                 }
             });
@@ -1026,5 +1030,6 @@
         // Initialize
         showSlide(0);
     </script>
+    <script src="gamification.js"></script>
 </body>
 </html>
